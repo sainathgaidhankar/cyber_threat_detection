@@ -4,6 +4,7 @@ import sys
 import csv
 import threading
 from datetime import datetime
+from pathlib import Path
 
 # Add utils to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'utils'))
@@ -11,8 +12,10 @@ from threat_predictor import ThreatPredictor
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
-# Initialize threat predictor
-predictor = ThreatPredictor(model_dir="./model")
+# Initialize threat predictor with absolute path
+script_dir = Path(__file__).resolve().parent
+model_dir = script_dir / "model"
+predictor = ThreatPredictor(model_dir=str(model_dir))
 
 # Store prediction history for metrics
 prediction_history = []
@@ -73,6 +76,10 @@ def predict():
         
         features = data["features"]
         
+        # Validate that features is a dict
+        if not isinstance(features, dict):
+            return jsonify({"error": "'features' must be a dictionary"}), 400
+        
         # Convert string keys to integers if needed
         new_features = {}
         for k, v in features.items():
@@ -111,7 +118,12 @@ def predict():
 @app.route("/api/model-info", methods=["GET"])
 def model_info():
     """Get information about the loaded model"""
-    return jsonify(predictor.get_model_info())
+    result = predictor.get_model_info()
+    
+    if _prediction_failed(result):
+        return jsonify(result), _prediction_error_status(result)
+    
+    return jsonify(result)
 
 
 @app.route("/api/metrics", methods=["GET"])
@@ -159,12 +171,19 @@ def submit_row():
     """Accept a single CSV row or features JSON and return a prediction."""
     try:
         data = request.json or {}
+        
         # If features provided directly
         if 'features' in data:
             features = data['features']
+            # Validate that features is a dict
+            if not isinstance(features, dict):
+                return jsonify({'error': "'features' must be a dictionary"}), 400
         elif 'row' in data:
             # parse CSV row string
             row_str = data['row']
+            # Validate that row_str is a string
+            if not isinstance(row_str, str):
+                return jsonify({'error': "'row' must be a string"}), 400
             reader = csv.reader([row_str])
             row = next(reader, [])
             row = row[:41] + ['0'] * max(0, 41 - len(row))

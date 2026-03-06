@@ -70,6 +70,18 @@ class ThreatPredictor:
         df = pd.DataFrame([features_dict])
         df.columns = df.columns.map(str)
 
+        # Reorder columns to canonical training order (sorted numeric indices)
+        # This ensures features are in the same order as during training
+        try:
+            numeric_cols = sorted([int(c) for c in df.columns if str(c).isdigit()])
+            canonical_cols = [str(c) for c in numeric_cols]
+            # Only keep columns that exist in the dataframe
+            canonical_cols = [c for c in canonical_cols if c in df.columns]
+            if canonical_cols:
+                df = df[canonical_cols]
+        except (ValueError, TypeError):
+            pass  # Keep original order if conversion fails
+
         # Apply saved label encoders when available
         for enc_key, encoder in self.label_encoders.items():
             key = str(enc_key)
