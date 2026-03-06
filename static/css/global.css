@@ -1,0 +1,487 @@
+/* ============================================
+   Modern Responsive Tailwind CSS
+   Cyber Threat Detection System
+   ============================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap');
+
+@layer base {
+    /* ============================================
+       HTML Base Styles
+       ============================================ */
+    html {
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+        @apply bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen text-gray-100 font-sans;
+        font-family: 'Inter', sans-serif;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Instrument Serif', serif;
+        @apply font-bold tracking-tight;
+    }
+
+    /* ============================================
+       Custom Scrollbar Styling
+       ============================================ */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-slate-800;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-gradient-to-b from-indigo-500 to-purple-600 rounded-full hover:from-indigo-400 hover:to-purple-500;
+    }
+
+    /* ============================================
+       Selection & Focus Styling
+       ============================================ */
+    ::selection {
+        @apply bg-indigo-600 text-white;
+    }
+
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-indigo-500;
+    }
+}
+
+@layer components {
+    /* ============================================
+       Container & Layout
+       ============================================ */
+    .container-main {
+        @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8;
+    }
+
+    /* ============================================
+       Header Component
+       ============================================ */
+    .header {
+        @apply relative mb-8 sm:mb-10 lg:mb-12;
+        @apply bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-indigo-600/10;
+        @apply border-b-2 border-indigo-500/30 backdrop-blur-sm;
+        @apply rounded-2xl p-6 sm:p-8 lg:p-10;
+        @apply shadow-2xl;
+    }
+
+    .header-title {
+        @apply text-3xl sm:text-4xl lg:text-5xl font-bold;
+        @apply bg-gradient-to-r from-indigo-400 via-purple-300 to-indigo-400;
+        @apply bg-clip-text text-transparent mb-2;
+    }
+
+    .header-subtitle {
+        @apply text-sm sm:text-base lg:text-lg text-gray-300;
+        @apply font-light tracking-wide;
+    }
+
+    /* ============================================
+       Card Components
+       ============================================ */
+    .card {
+        @apply bg-gradient-to-br from-slate-800/80 via-slate-800/50 to-slate-900/80;
+        @apply border border-indigo-500/20 backdrop-blur-xl;
+        @apply rounded-2xl shadow-2xl p-6 sm:p-8;
+        @apply transition-all duration-300 hover:border-indigo-500/40 hover:shadow-2xl;
+        @apply hover:shadow-indigo-500/10;
+    }
+
+    .card-title {
+        @apply text-xl sm:text-2xl lg:text-2xl font-bold text-indigo-300 mb-4;
+        @apply pb-4 border-b border-indigo-500/20;
+        @apply flex items-center gap-2;
+    }
+
+    /* ============================================
+       Stat Card Components
+       ============================================ */
+    .stat-card {
+        @apply bg-gradient-to-br from-slate-800/60 to-slate-900/60;
+        @apply border-2 border-indigo-500/30 backdrop-blur-md;
+        @apply rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center;
+        @apply transition-all duration-300;
+        @apply hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/20;
+        @apply hover:scale-105;
+    }
+
+    .stat-label {
+        @apply text-xs sm:text-sm uppercase tracking-widest font-semibold;
+        @apply text-gray-400 mb-3;
+    }
+
+    .stat-value {
+        @apply text-3xl sm:text-4xl lg:text-5xl font-bold;
+        @apply text-indigo-300 font-serif;
+        @apply my-2 sm:my-3;
+    }
+
+    /* ============================================
+       Grid Layouts - Responsive
+       ============================================ */
+    .grid-stats {
+        @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8 lg:mb-10;
+    }
+
+    .grid-content {
+        @apply grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8 lg:mb-10;
+    }
+
+    .grid-buttons {
+        @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4;
+    }
+
+    /* ============================================
+       Button Components - Modern & Responsive
+       ============================================ */
+    .btn {
+        @apply inline-flex items-center justify-center rounded-lg font-semibold;
+        @apply transition-all duration-200 cursor-pointer;
+        @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-indigo-500;
+        @apply disabled:opacity-50 disabled:cursor-not-allowed;
+        @apply px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 lg:py-3;
+        @apply text-sm sm:text-sm lg:text-base;
+        @apply hover:shadow-lg hover:shadow-indigo-500/20;
+    }
+
+    .btn-primary {
+        @apply bg-gradient-to-r from-indigo-600 to-purple-600;
+        @apply text-white border border-indigo-500/30;
+        @apply hover:from-indigo-500 hover:to-purple-500;
+        @apply hover:border-indigo-400/50;
+        @apply shadow-lg shadow-indigo-500/20;
+    }
+
+    .btn-secondary {
+        @apply bg-slate-700 text-gray-100 border border-slate-600;
+        @apply hover:bg-slate-600 hover:border-slate-500;
+        @apply hover:text-white;
+    }
+
+    .btn-sample {
+        @apply bg-slate-700/60 border border-indigo-500/30 text-gray-200;
+        @apply rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm;
+        @apply transition-all duration-300;
+        @apply hover:bg-indigo-600 hover:text-white hover:border-indigo-400/50;
+        @apply hover:shadow-lg hover:shadow-indigo-500/20;
+        @apply active:scale-95;
+    }
+
+    /* ============================================
+       Form Components - Responsive
+       ============================================ */
+    .form-group {
+        @apply mb-5 sm:mb-6 lg:mb-7;
+    }
+
+    .form-label {
+        @apply block mb-2 sm:mb-3 text-gray-300 font-semibold text-xs sm:text-sm;
+        @apply uppercase tracking-wider;
+    }
+
+    .form-input {
+        @apply w-full px-4 sm:px-5 py-2.5 sm:py-3;
+        @apply bg-slate-800/50 text-gray-100;
+        @apply border border-indigo-500/30 rounded-lg;
+        @apply font-mono text-xs sm:text-sm;
+        @apply transition-all duration-300;
+        @apply focus:outline-none focus:border-indigo-400/50 focus:ring-4 focus:ring-indigo-500/20;
+        @apply focus:bg-slate-800/70;
+        @apply placeholder-gray-500;
+    }
+
+    .form-input.h-24 {
+        @apply resize-none;
+    }
+
+    /* ============================================
+       Information Box & Alerts
+       ============================================ */
+    .info-box {
+        @apply bg-blue-500/10 border-l-4 border-blue-500 px-4 sm:px-5 lg:px-6;
+        @apply py-4 rounded-lg text-blue-200 text-xs sm:text-sm leading-relaxed;
+        @apply mb-5 sm:mb-6 lg:mb-8;
+    }
+
+    /* ============================================
+       Chart Component - Responsive
+       ============================================ */
+    .chart-wrapper {
+        @apply relative h-48 sm:h-64 lg:h-72 mt-4 sm:mt-6;
+    }
+
+    /* ============================================
+       Prediction List - Responsive
+       ============================================ */
+    .scrollable-list {
+        @apply max-h-72 sm:max-h-96 overflow-y-auto;
+        @apply space-y-2;
+        @apply pr-2 sm:pr-3;
+    }
+
+    .prediction-item {
+        @apply bg-slate-700/40 border-l-4 border-indigo-500;
+        @apply px-3 sm:px-4 py-3 sm:py-4 rounded-lg;
+        @apply text-xs sm:text-sm;
+        @apply transition-all duration-200;
+        @apply hover:bg-slate-700/60 hover:border-indigo-400;
+    }
+
+    .prediction-item strong {
+        @apply text-indigo-300;
+    }
+
+    /* ============================================
+       Loading Container
+       ============================================ */
+    .loading-container {
+        @apply text-center text-indigo-300 p-6 sm:p-8;
+    }
+
+    .loading-container.hidden {
+        display: none;
+    }
+
+    .spinner {
+        @apply w-8 h-8 sm:w-10 sm:h-10;
+        @apply border-4 border-slate-600 border-t-indigo-500;
+        @apply rounded-full animate-spin mx-auto mb-4;
+    }
+
+    /* ============================================
+       Result Container - Threat Display
+       ============================================ */
+    .result-container {
+        @apply bg-slate-800/40 border-l-4 border-indigo-500;
+        @apply px-4 sm:px-6 py-6 sm:py-8 rounded-xl;
+        @apply mt-6 sm:mt-8 backdrop-blur-sm;
+        @apply transition-all duration-300;
+    }
+
+    .result-container.hidden {
+        display: none;
+    }
+
+    .threat-result-box {
+        @apply p-5 sm:p-7 rounded-lg;
+    }
+
+    .threat-safe {
+        @apply border-l-green-500 bg-green-500/10;
+    }
+
+    .threat-warning {
+        @apply border-l-amber-500 bg-amber-500/10;
+    }
+
+    .threat-critical {
+        @apply border-l-red-500 bg-red-500/10;
+    }
+
+    .threat-type {
+        @apply font-serif font-bold text-lg sm:text-2xl;
+        @apply text-indigo-300 mb-2;
+    }
+
+    .threat-confidence {
+        @apply text-gray-300 text-sm sm:text-base;
+        @apply mt-2 sm:mt-3;
+    }
+
+    /* ============================================
+       Input Section - Main Content Area
+       ============================================ */
+    .input-section {
+        @apply bg-gradient-to-br from-slate-800/60 via-slate-800/40 to-slate-900/60;
+        @apply border border-indigo-500/20 backdrop-blur-xl;
+        @apply rounded-2xl shadow-2xl;
+        @apply px-5 sm:px-7 lg:px-10 py-7 sm:py-9 lg:py-12;
+    }
+
+    /* ============================================
+       Button Group - Responsive Spacing
+       ============================================ */
+    .button-group {
+        @apply flex flex-col sm:flex-row gap-3 sm:gap-4 flex-wrap;
+    }
+
+    /* ============================================
+       Text Utilities
+       ============================================ */
+    .text-error {
+        @apply text-red-400;
+    }
+
+    .text-success {
+        @apply text-green-400;
+    }
+
+    .text-warning {
+        @apply text-amber-400;
+    }
+
+    .text-muted {
+        @apply text-gray-400 text-xs sm:text-sm;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    /* ============================================
+       Responsive Utilities
+       ============================================ */
+    .hidden {
+        display: none !important;
+    }
+
+    /* ============================================
+       Mobile-Specific Optimizations
+       ============================================ */
+    @media (max-width: 640px) {
+        .container-main {
+            @apply px-3 py-3;
+        }
+
+        .header {
+            @apply rounded-xl p-5;
+        }
+
+        .header-title {
+            @apply text-2xl;
+        }
+
+        .card, .input-section {
+            @apply rounded-xl p-5;
+        }
+
+        .btn {
+            @apply px-4 py-2.5 text-sm;
+            @apply w-full sm:w-auto;
+        }
+
+        .grid-buttons {
+            @apply grid-cols-1;
+        }
+    }
+
+    /* ============================================
+       Tablet Optimizations (640px - 1024px)
+       ============================================ */
+    @media (min-width: 641px) and (max-width: 1024px) {
+        .grid-stats {
+            @apply grid-cols-2;
+        }
+
+        .grid-content {
+            @apply grid-cols-1;
+        }
+    }
+
+    /* ============================================
+       Desktop Optimizations (1024px+)
+       ============================================ */
+    @media (min-width: 1025px) {
+        .header {
+            @apply p-10;
+        }
+
+        .card, .input-section {
+            @apply p-8;
+        }
+
+        .graph {
+            @apply grid-cols-2;
+        }
+    }
+
+    /* ============================================
+       Print Styles (if needed for reports)
+       ============================================ */
+    @media print {
+        body {
+            @apply bg-white text-black;
+        }
+
+        .card, .input-section {
+            @apply border-gray-300 bg-white text-black;
+        }
+    }
+}
+
+/* ============================================
+   Animation Keyframes
+   ============================================ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+    }
+}
+
+@layer utilities {
+    .fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .slide-in-top {
+        animation: slideInFromTop 0.4s ease-out;
+    }
+
+    .pulse-glow {
+        animation: pulse-glow 2s infinite;
+    }
+
+    /* Custom responsive text sizes */
+    .text-responsive {
+        @apply text-sm sm:text-base lg:text-lg;
+    }
+
+    .text-responsive-lg {
+        @apply text-base sm:text-lg lg:text-xl;
+    }
+
+    /* Custom spacing utilities */
+    .gap-responsive {
+        @apply gap-3 sm:gap-4 lg:gap-6;
+    }
+
+    /* Border utilities */
+    .border-glow {
+        @apply border-indigo-500/20 hover:border-indigo-500/50 transition-colors;
+    }
+}
