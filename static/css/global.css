@@ -3,7 +3,9 @@
    Cyber Threat Detection System
    ============================================ */
 
-@import url('https://cdn.tailwindcss.com');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap');
 
 @layer base {
@@ -247,7 +249,7 @@
     }
 
     .loading-container.hidden {
-        @apply hidden;
+        display: none;
     }
 
     .spinner {
@@ -267,7 +269,7 @@
     }
 
     .result-container.hidden {
-        @apply hidden;
+        display: none;
     }
 
     .threat-result-box {
@@ -333,14 +335,14 @@
     }
 
     .text-center {
-        @apply text-center;
+        text-align: center;
     }
 
     /* ============================================
        Responsive Utilities
        ============================================ */
     .hidden {
-        @apply hidden !important;
+        display: none !important;
     }
 
     /* ============================================

@@ -149,7 +149,7 @@ function updateChart(distribution) {
                         bodyFont: { size: 12 },
                         callbacks: {
                             label: function(context) {
-                                return context.label + ': ' + context.parsed.y + ' flows';
+                                return context.label + ': ' + context.parsed + ' flows';
                             }
                         }
                     }
@@ -365,7 +365,8 @@ function showNotification(message, type = 'info') {
         'info': 'bg-blue-500/20 border-blue-500'
     }[type] || 'bg-blue-500/20 border-blue-500';
     
-    notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg border ${bgColor} text-white text-sm backdrop-blur-sm animation: slideInFromRight 0.3s ease-out;`;
+    notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg border ${bgColor} text-white text-sm backdrop-blur-sm`;
+    notification.style.animation = 'slideInFromRight 0.3s ease-out';
     notification.textContent = message;
     
     document.body.appendChild(notification);

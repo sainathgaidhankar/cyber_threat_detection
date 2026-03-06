@@ -8,10 +8,10 @@
     <title>Cyber Threat Detection System</title>
     
     <!-- Tailwind CSS with Modern Design System -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.compiled.css') }}">
     
     <!-- Chart.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.min.js"></script>
     
     <style>
         /* Smooth page transitions */
@@ -319,17 +319,8 @@
                 });
             });
 
-            // Smooth stat value updates
-            const updateStat = (element, newValue) => {
-                if (element.textContent !== String(newValue)) {
-                    element.style.opacity = '0.7';
-                    setTimeout(() => {
-                        element.textContent = newValue;
-                        element.style.opacity = '1';
-                    }, 150);
-                }
-            };
-            window.updateStat = updateStat;
+            // Reuse the canonical implementation from dashboard.js
+            window.updateStat = updateStatValue;
         });
     </script>
 </body>

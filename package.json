@@ -1,0 +1,11 @@
+﻿{
+  "name": "cyber-threat-detection",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i ./static/css/global.css -o ./static/css/global.compiled.css --minify",
+    "watch:css": "tailwindcss -i ./static/css/global.css -o ./static/css/global.compiled.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

@@ -1,6 +1,6 @@
 # 🛡️ Cyber Threat Detection System
 
-A machine learning-powered network security analyzer that detects and classifies **23 types of cyber attacks** in real-time using RandomForest neural networks trained on the NSL-KDD dataset.
+A machine learning-powered network security analyzer that detects and classifies **23 types of cyber attacks** in real-time using a Random Forest classifier trained on the NSL-KDD dataset.
 
 **Perfect for demo & final-year project evaluation.**
 
@@ -13,7 +13,7 @@ A machine learning-powered network security analyzer that detects and classifies
 ✅ **Modern Dashboard** - Real-time charts, metrics, and threat visualization  
 ✅ **One-Click Testing** - Pre-loaded sample attack flows for instant demo  
 ✅ **Clean Code** - No JSON complexity, plain English results  
-✅ **Fast & Accurate** - ~99% confidence on test data  
+✅ **Fast & Accurate** - 99.86% training accuracy / 86.71% test accuracy  
 
 ---
 
@@ -153,7 +153,7 @@ Response:
 ## 📈 Model Performance
 
 - **Training Accuracy:** 99.86%
-- **Test Accuracy:** ~99%
+- **Test Accuracy:** 86.71% (on known attack types)
 - **Model Type:** RandomForestClassifier
 - **Training Data:** 125,974 samples
 - **Features:** 41 network flow attributes
@@ -174,7 +174,7 @@ Response:
 ✅ Reproducible results (trained model is version-controlled)  
 ✅ Easy to demo (no external APIs, just Python + Flask)  
 ✅ Real dataset (NSL-KDD, standard cybersecurity benchmark)  
-✅ ~99% accuracy (meaningful results, not fake)  
+✅ 99.86% training accuracy and 86.71% test accuracy (meaningful, reproducible results)  
 
 **Time to evaluate:** 3-5 minutes max  
 **Complexity:** Appropriate for final-year CS/Cybersecurity students  
@@ -212,6 +212,9 @@ For questions or issues:
 
 ---
 
+### Problem: Port 5000 already in use
+**Solution:** Free the port first:
+```powershell
 netstat -ano | findstr :5000
 
 # Kill the process (replace PID with the number shown)

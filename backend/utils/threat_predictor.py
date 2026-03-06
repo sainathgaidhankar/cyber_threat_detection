@@ -6,7 +6,6 @@ import pickle
 import pandas as pd
 import os
 import numpy as np
-from sklearn.preprocessing import LabelEncoder
 
 
 class ThreatPredictor:
@@ -24,25 +23,37 @@ class ThreatPredictor:
     def load_model(self):
         """Load the trained model and encoders"""
         try:
+            model = None
+            le_y = None
+            label_encoders = {}
+
             # Load model
             model_path = os.path.join(self.model_dir, "saved_model.pkl")
             with open(model_path, "rb") as f:
-                self.model = pickle.load(f)
+                model = pickle.load(f)
             
             # Load label encoder for target variable
             le_y_path = os.path.join(self.model_dir, "label_encoder_y.pkl")
             with open(le_y_path, "rb") as f:
-                self.le_y = pickle.load(f)
+                le_y = pickle.load(f)
             
             # Load label encoders for features
             label_encoders_X_path = os.path.join(self.model_dir, "label_encoders_X.pkl")
             with open(label_encoders_X_path, "rb") as f:
-                self.label_encoders = pickle.load(f)
+                label_encoders = pickle.load(f)
+
+            # Only commit state after all artifacts load successfully
+            self.model = model
+            self.le_y = le_y
+            self.label_encoders = label_encoders
             
             print("Model and encoders loaded successfully")
             return True
         except Exception as e:
             print(f"Error loading model: {e}")
+            self.model = None
+            self.le_y = None
+            self.label_encoders = {}
             return False
     
     def encode_features(self, features_dict):
@@ -66,12 +77,13 @@ class ThreatPredictor:
                 try:
                     df[key] = encoder.transform(df[key])
                 except Exception:
-                    # Unknown label: fallback to most common class or first class
+                    # Unknown label: fallback to first known class, encoded numerically
                     try:
-                        fallback = encoder.classes_[0]
+                        fallback_label = encoder.classes_[0]
+                        fallback_encoded = encoder.transform([fallback_label])[0]
                     except Exception:
-                        fallback = 0
-                    df[key] = fallback
+                        fallback_encoded = 0
+                    df[key] = fallback_encoded
         
         return df
     
@@ -109,9 +121,15 @@ class ThreatPredictor:
             
             # Get all predictions with probabilities
             all_predictions = {}
-            for idx, prob in enumerate(prediction_proba):
-                attack_type = self.le_y.inverse_transform([idx])[0]
-                all_predictions[attack_type] = float(prob)
+            for class_id, prob in zip(self.model.classes_, prediction_proba):
+                attack_type = class_id
+                try:
+                    class_index = int(class_id)
+                    attack_type = self.le_y.inverse_transform([class_index])[0]
+                except Exception:
+                    # If classes are already labels, use class_id directly.
+                    attack_type = class_id
+                all_predictions[str(attack_type)] = float(prob)
             
             return {
                 "prediction": prediction_name,

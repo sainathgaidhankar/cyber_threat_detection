@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template
 import os
 import sys
 import csv
+import threading
 from datetime import datetime
 
 # Add utils to path for imports
@@ -16,6 +17,41 @@ predictor = ThreatPredictor(model_dir="./model")
 # Store prediction history for metrics
 prediction_history = []
 MAX_HISTORY = 100
+prediction_history_lock = threading.Lock()
+
+
+def _prediction_failed(result):
+    """Return True when predictor output indicates failure."""
+    if not isinstance(result, dict):
+        return True
+    if result.get("success") is False:
+        return True
+    return "error" in result
+
+
+def _prediction_error_status(result):
+    """Map prediction errors to a reasonable HTTP status."""
+    if not isinstance(result, dict):
+        return 500
+
+    error_text = str(result.get("error", "")).lower()
+    if "not loaded" in error_text:
+        return 503
+
+    client_error_markers = (
+        "invalid",
+        "missing",
+        "must",
+        "expected",
+        "could not convert",
+        "cannot convert",
+        "shape",
+        "features",
+    )
+    if any(marker in error_text for marker in client_error_markers):
+        return 400
+
+    return 500
 
 @app.route("/")
 def home():
@@ -48,17 +84,23 @@ def predict():
         
         # Make prediction
         result = predictor.predict(features)
-        
-        # Store in history
+
+        if _prediction_failed(result):
+            if not isinstance(result, dict):
+                result = {"error": "Prediction failed", "success": False}
+            return jsonify(result), _prediction_error_status(result)
+
+        # Store successful predictions in history only
         history_entry = {
             "timestamp": datetime.now().isoformat(),
             "prediction": result.get("prediction"),
             "confidence": result.get("confidence")
         }
-        prediction_history.append(history_entry)
-        if len(prediction_history) > MAX_HISTORY:
-            prediction_history.pop(0)
-        
+        with prediction_history_lock:
+            prediction_history.append(history_entry)
+            if len(prediction_history) > MAX_HISTORY:
+                prediction_history.pop(0)
+
         return jsonify(result)
     
     except Exception as e:
@@ -76,13 +118,14 @@ def model_info():
 def metrics():
     """Get prediction metrics and statistics"""
     try:
-        if not prediction_history:
+        with prediction_history_lock:
+            history_copy = list(prediction_history)
+
+        if not history_copy:
             return jsonify({
                 "total_predictions": 0,
                 "message": "No predictions made yet"
             })
-
-        history_copy = list(prediction_history)
         
         predictions = [h.get("prediction") for h in history_copy if h.get("prediction")]
         confidences = [float(h.get("confidence") or 0.0) for h in history_copy]
@@ -139,16 +182,22 @@ def submit_row():
 
         result = predictor.predict(new_features)
 
-        # store history
+        if _prediction_failed(result):
+            if not isinstance(result, dict):
+                result = {"error": "Prediction failed", "success": False}
+            return jsonify(result), _prediction_error_status(result)
+
+        # Store successful predictions in history only
         history_entry = {
             'timestamp': datetime.now().isoformat(),
             'features': new_features,
             'prediction': result.get('prediction') if isinstance(result, dict) else str(result),
             'confidence': float(result.get('confidence') or 0.0) if isinstance(result, dict) else 0.0
         }
-        prediction_history.append(history_entry)
-        if len(prediction_history) > MAX_HISTORY:
-            prediction_history.pop(0)
+        with prediction_history_lock:
+            prediction_history.append(history_entry)
+            if len(prediction_history) > MAX_HISTORY:
+                prediction_history.pop(0)
 
         return jsonify({'result': result})
     except Exception as e:
@@ -200,8 +249,14 @@ if __name__ == "__main__":
     print("=" * 60)
     print("Cyber Threat Detection System")
     print("=" * 60)
-    print(f"Model loaded successfully")
-    print(f"Features: {len(predictor.le_y.classes_)} attack classes")
+    if predictor and getattr(predictor, "model", None) is not None:
+        print("Model loaded successfully")
+        if hasattr(predictor, "le_y") and predictor.le_y is not None and hasattr(predictor.le_y, "classes_"):
+            print(f"Features: {len(predictor.le_y.classes_)} attack classes")
+        else:
+            print("Warning: predictor.le_y is unavailable; skipping class count output.")
+    else:
+        print("Warning: model was not loaded; prediction endpoints may return errors.")
     print("=" * 60)
     print("Dashboard: http://localhost:5000/dashboard")
     print("API: http://localhost:5000/api/model-info")
