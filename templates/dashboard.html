@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Advanced Cyber Threat Detection System - Real-time Network Flow Analysis">
+    <meta name="theme-color" content="#1e293b">
+    <title>Cyber Threat Detection System</title>
+    
+    <!-- Tailwind CSS with Modern Design System -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/chart.min.js"></script>
+    
+    <style>
+        /* Smooth page transitions */
+        body {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        /* Smooth scroll behavior for charts and lists */
+        .scrollable-list {
+            scroll-behavior: smooth;
+        }
+
+        /* Enhance button interactions */
+        button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Smooth form focus transitions */
+        input, textarea {
+            transition: all 0.3s ease;
+        }
+
+        /* Stagger animation for stat cards */
+        .stat-card {
+            animation: slideInUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Smooth card animations */
+        .card {
+            animation: slideInUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .card:nth-of-type(1) { animation-delay: 0.5s; }
+        .card:nth-of-type(2) { animation-delay: 0.6s; }
+
+        /* Result box animation */
+        .result-container:not(.hidden) {
+            animation: slideInUp 0.4s ease-out;
+        }
+
+        /* Smooth number transitions for stats */
+        .stat-value {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Loading animation enhancement */
+        .spinner {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <main class="container-main">
+        <!-- ============= HEADER SECTION ============= -->
+        <header class="header fade-in">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 class="header-title">🛡️ Cyber Threat Detection</h1>
+                    <p class="header-subtitle">Real-time Network Flow Analysis & Threat Classification</p>
+                </div>
+                <div class="text-gray-400 text-xs sm:text-sm mt-4 sm:mt-0 text-right">
+                    <div class="inline-block bg-slate-800/40 px-3 py-2 rounded-lg backdrop-blur-sm border border-indigo-500/20">
+                        <p class="font-mono">Active Monitoring</p>
+                        <p class="text-indigo-400">Live</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ============= STATISTICS SECTION ============= -->
+        <section aria-label="Statistics Overview" class="mb-6 sm:mb-8 lg:mb-10">
+            <div class="grid-stats">
+                <!-- Total Predictions Card -->
+                <div class="stat-card group">
+                    <div class="stat-label">
+                        <span class="text-indigo-400">📊</span>
+                        Total Predictions
+                    </div>
+                    <div class="stat-value group-hover:text-purple-300 transition-colors duration-300" id="totalPredictions">
+                        0
+                    </div>
+                    <div class="text-xs text-gray-500 mt-2">This session</div>
+                </div>
+
+                <!-- Average Confidence Card -->
+                <div class="stat-card group">
+                    <div class="stat-label">
+                        <span class="text-purple-400">⚡</span>
+                        Average Confidence
+                    </div>
+                    <div class="stat-value group-hover:text-indigo-300 transition-colors duration-300" id="avgConfidence">
+                        0%
+                    </div>
+                    <div class="text-xs text-gray-500 mt-2">Model accuracy</div>
+                </div>
+
+                <!-- Threats Detected Card -->
+                <div class="stat-card group">
+                    <div class="stat-label">
+                        <span class="text-red-400">🚨</span>
+                        Threats Detected
+                    </div>
+                    <div class="stat-value text-error group-hover:text-red-300 transition-colors duration-300" id="threatsDetected">
+                        0
+                    </div>
+                    <div class="text-xs text-gray-500 mt-2">Attack patterns</div>
+                </div>
+
+                <!-- Safe Flows Card -->
+                <div class="stat-card group">
+                    <div class="stat-label">
+                        <span class="text-green-400">✓</span>
+                        Safe Flows
+                    </div>
+                    <div class="stat-value text-success group-hover:text-green-300 transition-colors duration-300" id="safeFlows">
+                        0
+                    </div>
+                    <div class="text-xs text-gray-500 mt-2">Normal traffic</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============= CHARTS & ANALYSIS SECTION ============= -->
+        <section aria-label="Attack Distribution Analysis" class="mb-6 sm:mb-8 lg:mb-10">
+            <div class="grid-content">
+                <!-- Attack Distribution Chart -->
+                <div class="card group">
+                    <div class="card-title flex items-center justify-between">
+                        <span>📈 Attack Distribution</span>
+                        <span class="text-xs bg-indigo-500/20 px-2 py-1 rounded text-indigo-300">Live Update</span>
+                    </div>
+                    <div class="chart-wrapper group-hover:shadow-lg transition-shadow duration-300">
+                        <canvas id="attackChart" role="img" aria-label="Doughnut chart showing attack distribution"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Predictions -->
+                <div class="card group">
+                    <div class="card-title flex items-center justify-between">
+                        <span>🔍 Recent Predictions</span>
+                        <span class="text-xs bg-purple-500/20 px-2 py-1 rounded text-purple-300">Last 10</span>
+                    </div>
+                    <div class="scrollable-list" id="predictionsList" role="log" aria-live="polite" aria-label="Recent prediction list">
+                        <div class="flex items-center justify-center py-8">
+                            <p class="text-muted">No predictions yet. Analyze a network flow to get started.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============= INPUT & ANALYSIS SECTION ============= -->
+        <section aria-label="Network Flow Analysis" class="input-section">
+            <div class="mb-6 sm:mb-8">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">
+                    🧪 Test Detection System
+                </h2>
+                <p class="text-gray-400 text-sm">Analyze network flows to detect potential threats</p>
+            </div>
+
+            <!-- Information Box -->
+            <div class="info-box" role="note">
+                <strong>💡 How to use:</strong> Click a sample button for pre-configured network flows, or paste your own 41-feature CSV row to analyze threats in real-time.
+            </div>
+
+            <!-- Sample Data Section -->
+            <div class="form-group">
+                <label class="form-label">
+                    <span class="flex items-center gap-2">
+                        <span>📁</span>
+                        Load Sample Data
+                    </span>
+                </label>
+                <div class="grid-buttons">
+                    <button 
+                        class="btn-sample transition-all duration-300 hover:scale-105" 
+                        onclick="loadSample('normal_flow.csv')"
+                        aria-label="Load normal network flow sample">
+                        <span class="flex items-center justify-center gap-2">✓ Normal Flow</span>
+                    </button>
+                    <button 
+                        class="btn-sample transition-all duration-300 hover:scale-105" 
+                        onclick="loadSample('dos_attack.csv')"
+                        aria-label="Load DoS attack sample">
+                        <span class="flex items-center justify-center gap-2">⚠️ DoS Attack</span>
+                    </button>
+                    <button 
+                        class="btn-sample transition-all duration-300 hover:scale-105" 
+                        onclick="loadSample('probe_attack.csv')"
+                        aria-label="Load probe attack sample">
+                        <span class="flex items-center justify-center gap-2">🔍 Probe Attack</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CSV Input Field -->
+            <div class="form-group">
+                <label class="form-label" for="csvInput">
+                    <span class="flex items-center gap-2">
+                        <span>📝</span>
+                        CSV Row (41 values, comma-separated)
+                    </span>
+                </label>
+                <textarea 
+                    id="csvInput" 
+                    class="form-input h-24 transition-all duration-300" 
+                    placeholder="e.g., 0,tcp,http,SF,500,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,1,0,0,200,25,0.15,0.02,0.15,0,0,0,0.05,0"
+                    aria-label="CSV input field for network flow data"
+                    spellcheck="false"></textarea>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <button 
+                    class="btn-primary w-full sm:w-auto transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/50 active:scale-95" 
+                    onclick="submitCSV()"
+                    id="analyzeBtn"
+                    aria-label="Analyze the network flow for threats">
+                    <span class="flex items-center justify-center gap-2">
+                        <span>⚡</span>
+                        Analyze Flow
+                    </span>
+                </button>
+                <button 
+                    class="btn-secondary w-full sm:w-auto transition-all duration-300 active:scale-95" 
+                    onclick="document.getElementById('csvInput').value = ''"
+                    aria-label="Clear the CSV input field">
+                    <span class="flex items-center justify-center gap-2">
+                        <span>🗑️</span>
+                        Clear
+                    </span>
+                </button>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div class="loading-container hidden" id="loading" role="status" aria-live="polite" aria-label="Analysis in progress">
+                <div class="spinner pulse-glow"></div>
+                <p class="text-sm sm:text-base mt-2">🔄 Analyzing network flow...</p>
+                <p class="text-xs text-gray-400 mt-1">Using advanced ML model</p>
+            </div>
+
+            <!-- Result Display -->
+            <div class="result-container hidden" id="resultBox" role="region" aria-live="assertive" aria-label="Analysis result">
+                <div class="threat-result-box slide-in-top" id="threatResult"></div>
+            </div>
+        </section>
+
+        <!-- ============= FOOTER ============= -->
+        <footer class="mt-8 sm:mt-10 lg:mt-12 pt-6 border-t border-indigo-500/10 text-center text-gray-400 text-xs">
+            <p>Cyber Threat Detection System • NSL-KDD Dataset • ML Model: RandomForest (99% Accuracy)</p>
+        </footer>
+    </main>
+
+    <!-- External JavaScript -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    
+    <script>
+        // Add smooth transitions and visual feedback
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add visual feedback for form inputs
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement?.classList.add('ring-2', 'ring-indigo-500/50');
+                });
+                input.addEventListener('blur', function() {
+                    this.parentElement?.classList.remove('ring-2', 'ring-indigo-500/50');
+                });
+            });
+
+            // Smooth stat value updates
+            const updateStat = (element, newValue) => {
+                if (element.textContent !== String(newValue)) {
+                    element.style.opacity = '0.7';
+                    setTimeout(() => {
+                        element.textContent = newValue;
+                        element.style.opacity = '1';
+                    }, 150);
+                }
+            };
+            window.updateStat = updateStat;
+        });
+    </script>
+</body>
+</html>
