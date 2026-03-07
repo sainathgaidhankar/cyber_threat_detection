@@ -1,6 +1,7 @@
 /* ============================================
    Modern Responsive Tailwind CSS
    Cyber Threat Detection System
+   Light Theme - User Friendly Design
    ============================================ */
 
 @tailwind base;
@@ -19,13 +20,13 @@
     }
 
     body {
-        @apply bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen text-gray-100 font-sans;
+        @apply bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 min-h-screen text-slate-700 font-sans;
         font-family: 'Inter', sans-serif;
     }
 
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Instrument Serif', serif;
-        @apply font-bold tracking-tight;
+        @apply font-bold tracking-tight text-slate-800;
     }
 
     /* ============================================
@@ -37,22 +38,22 @@
     }
 
     ::-webkit-scrollbar-track {
-        @apply bg-slate-800;
+        @apply bg-slate-100;
     }
 
     ::-webkit-scrollbar-thumb {
-        @apply bg-gradient-to-b from-indigo-500 to-purple-600 rounded-full hover:from-indigo-400 hover:to-purple-500;
+        @apply bg-gradient-to-b from-blue-400 to-teal-500 rounded-full hover:from-blue-500 hover:to-teal-600;
     }
 
     /* ============================================
        Selection & Focus Styling
        ============================================ */
     ::selection {
-        @apply bg-indigo-600 text-white;
+        @apply bg-blue-500 text-white;
     }
 
     :focus-visible {
-        @apply outline-2 outline-offset-2 outline-indigo-500;
+        @apply outline-2 outline-offset-2 outline-blue-500;
     }
 }
 
@@ -69,20 +70,20 @@
        ============================================ */
     .header {
         @apply relative mb-8 sm:mb-10 lg:mb-12;
-        @apply bg-gradient-to-r from-indigo-600/10 via-purple-600/10 to-indigo-600/10;
-        @apply border-b-2 border-indigo-500/30 backdrop-blur-sm;
+        @apply bg-gradient-to-r from-blue-500/10 via-teal-500/10 to-blue-500/10;
+        @apply border-b-2 border-blue-300/30 backdrop-blur-sm;
         @apply rounded-2xl p-6 sm:p-8 lg:p-10;
-        @apply shadow-2xl;
+        @apply shadow-lg;
     }
 
     .header-title {
         @apply text-3xl sm:text-4xl lg:text-5xl font-bold;
-        @apply bg-gradient-to-r from-indigo-400 via-purple-300 to-indigo-400;
+        @apply bg-gradient-to-r from-blue-600 via-teal-500 to-blue-600;
         @apply bg-clip-text text-transparent mb-2;
     }
 
     .header-subtitle {
-        @apply text-sm sm:text-base lg:text-lg text-gray-300;
+        @apply text-sm sm:text-base lg:text-lg text-slate-500;
         @apply font-light tracking-wide;
     }
 
@@ -90,16 +91,15 @@
        Card Components
        ============================================ */
     .card {
-        @apply bg-gradient-to-br from-slate-800/80 via-slate-800/50 to-slate-900/80;
-        @apply border border-indigo-500/20 backdrop-blur-xl;
-        @apply rounded-2xl shadow-2xl p-6 sm:p-8;
-        @apply transition-all duration-300 hover:border-indigo-500/40 hover:shadow-2xl;
-        @apply hover:shadow-indigo-500/10;
+        @apply bg-gradient-to-br from-white via-slate-50 to-blue-50/30;
+        @apply border border-blue-200/50 backdrop-blur-xl;
+        @apply rounded-2xl shadow-lg p-6 sm:p-8;
+        @apply transition-all duration-300 hover:border-blue-300/50 hover:shadow-xl;
     }
 
     .card-title {
-        @apply text-xl sm:text-2xl lg:text-2xl font-bold text-indigo-300 mb-4;
-        @apply pb-4 border-b border-indigo-500/20;
+        @apply text-xl sm:text-2xl lg:text-2xl font-bold text-blue-600 mb-4;
+        @apply pb-4 border-b border-blue-200/30;
         @apply flex items-center gap-2;
     }
 
@@ -107,22 +107,22 @@
        Stat Card Components
        ============================================ */
     .stat-card {
-        @apply bg-gradient-to-br from-slate-800/60 to-slate-900/60;
-        @apply border-2 border-indigo-500/30 backdrop-blur-md;
+        @apply bg-gradient-to-br from-white to-blue-50/50;
+        @apply border-2 border-blue-200/50 backdrop-blur-md;
         @apply rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center;
         @apply transition-all duration-300;
-        @apply hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/20;
+        @apply hover:border-blue-400/50 hover:shadow-lg hover:shadow-blue-100/50;
         @apply hover:scale-105;
     }
 
     .stat-label {
         @apply text-xs sm:text-sm uppercase tracking-widest font-semibold;
-        @apply text-gray-400 mb-3;
+        @apply text-slate-500 mb-3;
     }
 
     .stat-value {
         @apply text-3xl sm:text-4xl lg:text-5xl font-bold;
-        @apply text-indigo-300 font-serif;
+        @apply text-blue-600 font-serif;
         @apply my-2 sm:my-3;
     }
 
@@ -147,33 +147,33 @@
     .btn {
         @apply inline-flex items-center justify-center rounded-lg font-semibold;
         @apply transition-all duration-200 cursor-pointer;
-        @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-indigo-500;
+        @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 focus:ring-blue-500;
         @apply disabled:opacity-50 disabled:cursor-not-allowed;
         @apply px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 lg:py-3;
         @apply text-sm sm:text-sm lg:text-base;
-        @apply hover:shadow-lg hover:shadow-indigo-500/20;
+        @apply hover:shadow-lg hover:shadow-blue-200/50;
     }
 
     .btn-primary {
-        @apply bg-gradient-to-r from-indigo-600 to-purple-600;
-        @apply text-white border border-indigo-500/30;
-        @apply hover:from-indigo-500 hover:to-purple-500;
-        @apply hover:border-indigo-400/50;
-        @apply shadow-lg shadow-indigo-500/20;
+        @apply bg-gradient-to-r from-blue-500 to-teal-500;
+        @apply text-white border border-blue-400/30;
+        @apply hover:from-blue-600 hover:to-teal-600;
+        @apply hover:border-blue-500/50;
+        @apply shadow-lg shadow-blue-200/50;
     }
 
     .btn-secondary {
-        @apply bg-slate-700 text-gray-100 border border-slate-600;
-        @apply hover:bg-slate-600 hover:border-slate-500;
-        @apply hover:text-white;
+        @apply bg-slate-200 text-slate-700 border border-slate-300;
+        @apply hover:bg-slate-300 hover:border-slate-400;
+        @apply hover:text-slate-800;
     }
 
     .btn-sample {
-        @apply bg-slate-700/60 border border-indigo-500/30 text-gray-200;
+        @apply bg-blue-50/80 border border-blue-200/50 text-blue-700;
         @apply rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm;
         @apply transition-all duration-300;
-        @apply hover:bg-indigo-600 hover:text-white hover:border-indigo-400/50;
-        @apply hover:shadow-lg hover:shadow-indigo-500/20;
+        @apply hover:bg-blue-500 hover:text-white hover:border-blue-400/50;
+        @apply hover:shadow-lg hover:shadow-blue-200/50;
         @apply active:scale-95;
     }
 
@@ -185,19 +185,19 @@
     }
 
     .form-label {
-        @apply block mb-2 sm:mb-3 text-gray-300 font-semibold text-xs sm:text-sm;
+        @apply block mb-2 sm:mb-3 text-slate-600 font-semibold text-xs sm:text-sm;
         @apply uppercase tracking-wider;
     }
 
     .form-input {
         @apply w-full px-4 sm:px-5 py-2.5 sm:py-3;
-        @apply bg-slate-800/50 text-gray-100;
-        @apply border border-indigo-500/30 rounded-lg;
+        @apply bg-white/80 text-slate-700;
+        @apply border border-blue-200/50 rounded-lg;
         @apply font-mono text-xs sm:text-sm;
         @apply transition-all duration-300;
-        @apply focus:outline-none focus:border-indigo-400/50 focus:ring-4 focus:ring-indigo-500/20;
-        @apply focus:bg-slate-800/70;
-        @apply placeholder-gray-500;
+        @apply focus:outline-none focus:border-blue-400/50 focus:ring-4 focus:ring-blue-100/50;
+        @apply focus:bg-white;
+        @apply placeholder-slate-400;
     }
 
     .form-input.h-24 {
@@ -208,8 +208,8 @@
        Information Box & Alerts
        ============================================ */
     .info-box {
-        @apply bg-blue-500/10 border-l-4 border-blue-500 px-4 sm:px-5 lg:px-6;
-        @apply py-4 rounded-lg text-blue-200 text-xs sm:text-sm leading-relaxed;
+        @apply bg-blue-50 border-l-4 border-blue-400 px-4 sm:px-5 lg:px-6;
+        @apply py-4 rounded-lg text-blue-700 text-xs sm:text-sm leading-relaxed;
         @apply mb-5 sm:mb-6 lg:mb-8;
     }
 
@@ -230,22 +230,22 @@
     }
 
     .prediction-item {
-        @apply bg-slate-700/40 border-l-4 border-indigo-500;
+        @apply bg-blue-50/50 border-l-4 border-blue-400;
         @apply px-3 sm:px-4 py-3 sm:py-4 rounded-lg;
         @apply text-xs sm:text-sm;
         @apply transition-all duration-200;
-        @apply hover:bg-slate-700/60 hover:border-indigo-400;
+        @apply hover:bg-blue-100/50 hover:border-blue-500;
     }
 
     .prediction-item strong {
-        @apply text-indigo-300;
+        @apply text-blue-600;
     }
 
     /* ============================================
        Loading Container
        ============================================ */
     .loading-container {
-        @apply text-center text-indigo-300 p-6 sm:p-8;
+        @apply text-center text-blue-600 p-6 sm:p-8;
     }
 
     .loading-container.hidden {
@@ -254,7 +254,7 @@
 
     .spinner {
         @apply w-8 h-8 sm:w-10 sm:h-10;
-        @apply border-4 border-slate-600 border-t-indigo-500;
+        @apply border-4 border-blue-200 border-t-blue-500;
         @apply rounded-full animate-spin mx-auto mb-4;
     }
 
@@ -262,7 +262,7 @@
        Result Container - Threat Display
        ============================================ */
     .result-container {
-        @apply bg-slate-800/40 border-l-4 border-indigo-500;
+        @apply bg-blue-50/50 border-l-4 border-blue-400;
         @apply px-4 sm:px-6 py-6 sm:py-8 rounded-xl;
         @apply mt-6 sm:mt-8 backdrop-blur-sm;
         @apply transition-all duration-300;
@@ -277,24 +277,24 @@
     }
 
     .threat-safe {
-        @apply border-l-green-500 bg-green-500/10;
+        @apply border-l-green-500 bg-green-50;
     }
 
     .threat-warning {
-        @apply border-l-amber-500 bg-amber-500/10;
+        @apply border-l-amber-500 bg-amber-50;
     }
 
     .threat-critical {
-        @apply border-l-red-500 bg-red-500/10;
+        @apply border-l-red-500 bg-red-50;
     }
 
     .threat-type {
         @apply font-serif font-bold text-lg sm:text-2xl;
-        @apply text-indigo-300 mb-2;
+        @apply text-blue-700 mb-2;
     }
 
     .threat-confidence {
-        @apply text-gray-300 text-sm sm:text-base;
+        @apply text-slate-600 text-sm sm:text-base;
         @apply mt-2 sm:mt-3;
     }
 
@@ -302,9 +302,9 @@
        Input Section - Main Content Area
        ============================================ */
     .input-section {
-        @apply bg-gradient-to-br from-slate-800/60 via-slate-800/40 to-slate-900/60;
-        @apply border border-indigo-500/20 backdrop-blur-xl;
-        @apply rounded-2xl shadow-2xl;
+        @apply bg-gradient-to-br from-white via-slate-50 to-blue-50/30;
+        @apply border border-blue-200/50 backdrop-blur-xl;
+        @apply rounded-2xl shadow-lg;
         @apply px-5 sm:px-7 lg:px-10 py-7 sm:py-9 lg:py-12;
     }
 
@@ -319,19 +319,19 @@
        Text Utilities
        ============================================ */
     .text-error {
-        @apply text-red-400;
+        @apply text-red-500;
     }
 
     .text-success {
-        @apply text-green-400;
+        @apply text-green-600;
     }
 
     .text-warning {
-        @apply text-amber-400;
+        @apply text-amber-500;
     }
 
     .text-muted {
-        @apply text-gray-400 text-xs sm:text-sm;
+        @apply text-slate-400 text-xs sm:text-sm;
     }
 
     .text-center {
@@ -343,6 +343,61 @@
        ============================================ */
     .hidden {
         display: none !important;
+    }
+
+    /* ============================================
+       Color Utilities for Header
+       ============================================ */
+    .bg-slate-800\/40 {
+        background-color: rgba(30, 41, 59, 0.1);
+    }
+
+    .text-gray-400 {
+        color: #9ca3af;
+    }
+
+    .text-gray-500 {
+        color: #6b7280;
+    }
+
+    .text-indigo-400 {
+        color: #818cf8;
+    }
+
+    .text-indigo-300 {
+        color: #a5b4fc;
+    }
+
+    .text-purple-300 {
+        color: #d8b4fe;
+    }
+
+    .text-purple-400 {
+        color: #c084fc;
+    }
+
+    .text-green-300 {
+        color: #bbf7d0;
+    }
+
+    .text-red-300 {
+        color: #fca5a5;
+    }
+
+    .border-indigo-500\/20 {
+        border-color: rgba(99, 102, 241, 0.2);
+    }
+
+    .border-indigo-500\/10 {
+        border-color: rgba(99, 102, 241, 0.1);
+    }
+
+    .bg-indigo-500\/20 {
+        background-color: rgba(99, 102, 241, 0.2);
+    }
+
+    .bg-purple-500\/20 {
+        background-color: rgba(168, 85, 247, 0.2);
     }
 
     /* ============================================
@@ -446,10 +501,10 @@
 
 @keyframes pulse-glow {
     0%, 100% {
-        box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
     }
     50% {
-        box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
     }
 }
 
@@ -482,6 +537,7 @@
 
     /* Border utilities */
     .border-glow {
-        @apply border-indigo-500/20 hover:border-indigo-500/50 transition-colors;
+        @apply border-blue-300/30 hover:border-blue-400/50 transition-colors;
     }
 }
+
