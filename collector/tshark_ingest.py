@@ -235,8 +235,13 @@ def parse_packet(line: str) -> Optional[Packet]:
     )
 
 
-def flow_key(pkt: Packet) -> Tuple[str, str, int, int, str]:
-    return (pkt.src_ip, pkt.dst_ip, pkt.src_port, pkt.dst_port, pkt.proto)
+def flow_key(pkt: Packet) -> Tuple[Tuple[str, str, int, int, str], bool]:
+    src_endpoint = (pkt.src_ip, pkt.src_port)
+    dst_endpoint = (pkt.dst_ip, pkt.dst_port)
+    is_reversed = src_endpoint > dst_endpoint
+    if is_reversed:
+        return (pkt.dst_ip, pkt.src_ip, pkt.dst_port, pkt.src_port, pkt.proto), True
+    return (pkt.src_ip, pkt.dst_ip, pkt.src_port, pkt.dst_port, pkt.proto), False
 
 
 def to_payload(flow: FlowState) -> dict:
@@ -301,7 +306,7 @@ def run(args: argparse.Namespace) -> int:
             if not pkt:
                 continue
             stats["packets"] += 1
-            key = flow_key(pkt)
+            key, is_reversed = flow_key(pkt)
 
             flow = flows.get(key)
             if flow is None:
@@ -318,17 +323,18 @@ def run(args: argparse.Namespace) -> int:
                 )
                 flows[key] = flow
 
-            flow.last_ts = pkt.ts
+            flow.first_ts = min(flow.first_ts, pkt.ts)
+            flow.last_ts = max(flow.last_ts, pkt.ts)
             flow.syn_seen = flow.syn_seen or bool(pkt.syn)
             flow.ack_seen = flow.ack_seen or bool(pkt.ack)
             flow.rst_seen = flow.rst_seen or bool(pkt.rst)
             flow.fin_seen = flow.fin_seen or bool(pkt.fin)
 
-            # Directional byte attribution.
-            if pkt.src_ip == flow.src_ip and pkt.src_port == flow.src_port:
-                flow.src_bytes += pkt.length
-            else:
+            # Directional byte attribution based on canonical flow orientation.
+            if is_reversed:
                 flow.dst_bytes += pkt.length
+            else:
+                flow.src_bytes += pkt.length
 
             now = time.time()
             if now - last_flush >= args.flush_interval:
