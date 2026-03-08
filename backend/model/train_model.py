@@ -10,30 +10,36 @@ script_dir = Path(__file__).resolve().parent
 train_data_path = script_dir.parent.parent / "data" / "NSL_KDD_Train.csv"
 df = pd.read_csv(train_data_path, header=None)
 
-# Print column names to verify
-print(df.columns)
-
 # The last column (index -1 or column name by position) is the attack type label
 # Drop the last column for features, keep it as target
 X = df.iloc[:, :-1]  # All columns except the last one
 y = df.iloc[:, -1]   # Last column only (the attack type)
 
-# Encode categorical variables in X
-# Find columns with non-numeric data and encode them
-label_encoders = {}
-for col in X.columns:
-    if X[col].dtype == 'object':  # If column is string/object type
-        le = LabelEncoder()
-        X[col] = le.fit_transform(X[col])
-        label_encoders[col] = le
-
-# Encode target variable y
-le_y = LabelEncoder()
-y = le_y.fit_transform(y)
-
-# Split data
+# Split data first to prevent data leakage
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, stratify=y, random_state=42
+)
+
+# Encode categorical variables in X_train (fit only on training data)
+# Find columns with non-numeric data and encode them
+label_encoders = {}
+for col in X_train.columns:
+    if X_train[col].dtype == 'object':  # If column is string/object type
+        le = LabelEncoder()
+        # Fit on training data only
+        X_train[col] = le.fit_transform(X_train[col].astype(str))
+        # Transform test data, handling unseen categories
+        X_test[col] = X_test[col].astype(str).map(
+            lambda x: le.transform([x])[0] if x in le.classes_ else 0
+        )
+        label_encoders[col] = le
+
+# Encode target variable y (fit only on training data)
+le_y = LabelEncoder()
+y_train = le_y.fit_transform(y_train)
+# Transform test data, handling unseen categories
+y_test = y_test.astype(str).map(
+    lambda x: le_y.transform([x])[0] if x in le_y.classes_ else 0
 )
 
 # Train model with class weighting to handle imbalance

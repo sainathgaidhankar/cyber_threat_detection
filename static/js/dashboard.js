@@ -5,6 +5,7 @@
 
 let attackChart = null;
 let updateInterval = null;
+let lastPredictionsSignature = '';
 
 // Initialize dashboard on page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -76,7 +77,12 @@ function updateMetrics() {
             updateStatValue('safeFlows', safe);
             
             // Update chart
-            updateChart(distribution);
+            try {
+                updateChart(distribution);
+            } catch (chartErr) {
+                console.error('Chart render error:', chartErr);
+                showNotification('Chart library not loaded. Metrics still updating.', 'warning');
+            }
             
             // Update predictions list
             updatePredictionsList(data.latest_predictions || []);
@@ -93,6 +99,60 @@ function updateMetrics() {
 function updateChart(distribution) {
     const labels = Object.keys(distribution);
     const values = Object.values(distribution);
+
+    // Fallback renderer when Chart.js is unavailable.
+    if (typeof Chart === 'undefined') {
+        const canvas = document.getElementById('attackChart');
+        if (!canvas) return;
+        const wrapper = canvas.parentElement;
+        if (!wrapper) return;
+
+        let fallback = document.getElementById('attackChartFallback');
+        if (!fallback) {
+            fallback = document.createElement('div');
+            fallback.id = 'attackChartFallback';
+            fallback.className = 'h-full overflow-y-auto text-sm text-slate-600 p-2';
+            wrapper.appendChild(fallback);
+        }
+
+        if (labels.length === 0) {
+            fallback.innerHTML = `<div class="h-full flex items-center justify-center">
+                <p class="text-slate-500">No attack data yet. Run analysis to generate live graph.</p>
+            </div>`;
+        } else {
+            const total = values.reduce((a, b) => a + b, 0) || 1;
+            const topRows = labels
+                .map((label, idx) => ({ label, value: values[idx] }))
+                .sort((a, b) => b.value - a.value)
+                .slice(0, 8);
+
+            fallback.innerHTML = `<div class="mb-3 flex items-center justify-between">
+                <p class="font-semibold text-slate-700">Live Attack Distribution (Top 8)</p>
+                <p class="text-xs text-slate-500">Total: ${total} flows</p>
+            </div>` + topRows.map((row, idx) => {
+                const label = row.label;
+                const value = row.value;
+                const pct = ((value / total) * 100).toFixed(1);
+                return `<div class="mb-2">
+                    <div class="flex justify-between text-xs sm:text-sm">
+                        <span class="font-medium truncate pr-2">${label}</span>
+                        <span>${value} (${pct}%)</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded h-2.5 mt-1">
+                        <div class="h-2.5 rounded transition-all duration-500" style="width:${pct}%; background: linear-gradient(90deg, #3b82f6, #06b6d4)"></div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        canvas.style.display = 'none';
+        return;
+    }
+
+    const canvas = document.getElementById('attackChart');
+    if (canvas) canvas.style.display = '';
+    const fallback = document.getElementById('attackChartFallback');
+    if (fallback) fallback.remove();
     
     // Color palette for chart
     const colors = [
@@ -170,6 +230,12 @@ function updateChart(distribution) {
 function updatePredictionsList(predictions) {
     const list = document.getElementById('predictionsList');
     if (!list) return;
+
+    const signature = JSON.stringify(predictions || []);
+    if (signature === lastPredictionsSignature) {
+        return; // No new data, avoid unnecessary re-render/animation.
+    }
+    lastPredictionsSignature = signature;
     
     if (predictions.length === 0) {
         list.innerHTML = `<div class="flex items-center justify-center py-8">
@@ -344,6 +410,116 @@ function submitCSV() {
         
         console.error('Submission error:', e);
         showNotification('Failed to analyze: ' + e.message, 'error');
+    });
+}
+
+/**
+ * Submit raw flow fields and let backend generate all 41 model features.
+ */
+function submitRawFlow() {
+    const protocol = document.getElementById('rawProtocol')?.value.trim();
+    const service = document.getElementById('rawService')?.value.trim();
+    const flag = document.getElementById('rawFlag')?.value.trim();
+    const srcBytes = document.getElementById('rawSrcBytes')?.value.trim();
+    const dstBytes = document.getElementById('rawDstBytes')?.value.trim();
+    const analyzeBtn = document.getElementById('analyzeRawBtn');
+    const loading = document.getElementById('loading');
+    const resultBox = document.getElementById('resultBox');
+
+    if (!protocol || !service || !flag || srcBytes === '' || dstBytes === '') {
+        showNotification('Required: protocol_type, service, flag, src_bytes, dst_bytes', 'warning');
+        return;
+    }
+
+    const payload = {
+        protocol_type: protocol,
+        service: service,
+        flag: flag,
+        src_bytes: Number(srcBytes),
+        dst_bytes: Number(dstBytes),
+    };
+
+    const optionalFields = [
+        ['rawDuration', 'duration', Number],
+        ['rawSrcIp', 'src_ip', String],
+        ['rawDstIp', 'dst_ip', String],
+        ['rawSrcPort', 'src_port', Number],
+        ['rawDstPort', 'dst_port', Number],
+        ['rawTimestamp', 'timestamp', String],
+    ];
+
+    optionalFields.forEach(([id, key, caster]) => {
+        const raw = document.getElementById(id)?.value.trim();
+        if (raw) payload[key] = caster(raw);
+    });
+
+    loading.classList.remove('hidden');
+    resultBox.classList.add('hidden');
+    analyzeBtn.disabled = true;
+    analyzeBtn.style.opacity = '0.6';
+
+    fetch('/api/predict-flow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+    })
+    .then(data => {
+        loading.classList.add('hidden');
+        analyzeBtn.disabled = false;
+        analyzeBtn.style.opacity = '1';
+
+        if (data.error) {
+            showNotification('Error: ' + data.error, 'error');
+            return;
+        }
+
+        const result = data.result || {};
+        const pred = result.prediction || 'Unknown';
+        const conf = result.confidence ? (result.confidence * 100).toFixed(1) : 0;
+        const generatedCount = Object.keys(data.generated_features || {}).length;
+
+        let threatClass = 'threat-safe';
+        let threatIcon = 'OK';
+        let threatText = 'SAFE';
+
+        if (pred.toLowerCase() !== 'normal') {
+            threatText = 'THREAT DETECTED';
+            threatIcon = Number(conf) > 80 ? 'CRITICAL' : 'WARN';
+            threatClass = Number(conf) > 80 ? 'threat-critical' : 'threat-warning';
+        }
+
+        const html = `<div class="${threatClass}">
+            <div class="flex items-center gap-3 mb-3">
+                <span class="text-3xl sm:text-4xl">${threatIcon}</span>
+                <div class="flex-1">
+                    <div class="threat-type">${pred.toUpperCase()}</div>
+                    <div class="text-xs text-gray-400">${threatText}</div>
+                </div>
+            </div>
+            <div class="threat-confidence flex items-center justify-between">
+                <span>Confidence Score</span>
+                <span class="font-bold text-lg">${conf}%</span>
+            </div>
+            <div class="mt-3 pt-3 border-t border-current opacity-50 text-xs">
+                Raw flow mode • Generated ${generatedCount}/41 features
+            </div>
+        </div>`;
+
+        document.getElementById('threatResult').innerHTML = html;
+        resultBox.classList.remove('hidden');
+        setTimeout(updateMetrics, 500);
+        showNotification('Raw flow analyzed', 'success');
+    })
+    .catch(e => {
+        loading.classList.add('hidden');
+        analyzeBtn.disabled = false;
+        analyzeBtn.style.opacity = '1';
+        console.error('Raw flow submission error:', e);
+        showNotification('Failed to analyze raw flow: ' + e.message, 'error');
     });
 }
 

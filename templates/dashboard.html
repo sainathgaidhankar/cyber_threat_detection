@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Advanced Cyber Threat Detection System - Real-time Network Flow Analysis">
-    <meta name="theme-color" content="#1e293b">
+    <meta name="theme-color" content="#3b82f6">
     <title>Cyber Threat Detection System</title>
     
     <!-- Tailwind CSS with Modern Design System -->
@@ -96,7 +96,7 @@
 
         /* Loading animation enhancement */
         .spinner {
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
         }
     </style>
 </head>
@@ -109,10 +109,10 @@
                     <h1 class="header-title">🛡️ Cyber Threat Detection</h1>
                     <p class="header-subtitle">Real-time Network Flow Analysis & Threat Classification</p>
                 </div>
-                <div class="text-gray-400 text-xs sm:text-sm mt-4 sm:mt-0 text-right">
-                    <div class="inline-block bg-slate-800/40 px-3 py-2 rounded-lg backdrop-blur-sm border border-indigo-500/20">
-                        <p class="font-mono">Active Monitoring</p>
-                        <p class="text-indigo-400">Live</p>
+                <div class="text-gray-500 text-xs sm:text-sm mt-4 sm:mt-0 text-right">
+                    <div class="inline-block bg-blue-50 px-3 py-2 rounded-lg backdrop-blur-sm border border-blue-200">
+                        <p class="font-mono text-blue-600">Active Monitoring</p>
+                        <p class="text-green-600 font-semibold">Live</p>
                     </div>
                 </div>
             </div>
@@ -124,49 +124,49 @@
                 <!-- Total Predictions Card -->
                 <div class="stat-card group">
                     <div class="stat-label">
-                        <span class="text-indigo-400">📊</span>
+                        <span class="text-blue-500">📊</span>
                         Total Predictions
                     </div>
-                    <div class="stat-value group-hover:text-purple-300 transition-colors duration-300" id="totalPredictions">
+                    <div class="stat-value group-hover:text-blue-700 transition-colors duration-300" id="totalPredictions">
                         0
                     </div>
-                    <div class="text-xs text-gray-500 mt-2">This session</div>
+                    <div class="text-xs text-gray-400 mt-2">This session</div>
                 </div>
 
                 <!-- Average Confidence Card -->
                 <div class="stat-card group">
                     <div class="stat-label">
-                        <span class="text-purple-400">⚡</span>
+                        <span class="text-teal-500">⚡</span>
                         Average Confidence
                     </div>
-                    <div class="stat-value group-hover:text-indigo-300 transition-colors duration-300" id="avgConfidence">
+                    <div class="stat-value group-hover:text-teal-700 transition-colors duration-300" id="avgConfidence">
                         0%
                     </div>
-                    <div class="text-xs text-gray-500 mt-2">Model accuracy</div>
+                    <div class="text-xs text-gray-400 mt-2">Model accuracy</div>
                 </div>
 
                 <!-- Threats Detected Card -->
                 <div class="stat-card group">
                     <div class="stat-label">
-                        <span class="text-red-400">🚨</span>
+                        <span class="text-red-500">🚨</span>
                         Threats Detected
                     </div>
-                    <div class="stat-value text-error group-hover:text-red-300 transition-colors duration-300" id="threatsDetected">
+                    <div class="stat-value text-error group-hover:text-red-700 transition-colors duration-300" id="threatsDetected">
                         0
                     </div>
-                    <div class="text-xs text-gray-500 mt-2">Attack patterns</div>
+                    <div class="text-xs text-gray-400 mt-2">Attack patterns</div>
                 </div>
 
                 <!-- Safe Flows Card -->
                 <div class="stat-card group">
                     <div class="stat-label">
-                        <span class="text-green-400">✓</span>
+                        <span class="text-green-500">✓</span>
                         Safe Flows
                     </div>
-                    <div class="stat-value text-success group-hover:text-green-300 transition-colors duration-300" id="safeFlows">
+                    <div class="stat-value text-success group-hover:text-green-700 transition-colors duration-300" id="safeFlows">
                         0
                     </div>
-                    <div class="text-xs text-gray-500 mt-2">Normal traffic</div>
+                    <div class="text-xs text-gray-400 mt-2">Normal traffic</div>
                 </div>
             </div>
         </section>
@@ -178,7 +178,7 @@
                 <div class="card group">
                     <div class="card-title flex items-center justify-between">
                         <span>📈 Attack Distribution</span>
-                        <span class="text-xs bg-indigo-500/20 px-2 py-1 rounded text-indigo-300">Live Update</span>
+                        <span class="text-xs bg-blue-100 px-2 py-1 rounded text-blue-600">Live Update</span>
                     </div>
                     <div class="chart-wrapper group-hover:shadow-lg transition-shadow duration-300">
                         <canvas id="attackChart" role="img" aria-label="Doughnut chart showing attack distribution"></canvas>
@@ -189,7 +189,7 @@
                 <div class="card group">
                     <div class="card-title flex items-center justify-between">
                         <span>🔍 Recent Predictions</span>
-                        <span class="text-xs bg-purple-500/20 px-2 py-1 rounded text-purple-300">Last 10</span>
+                        <span class="text-xs bg-teal-100 px-2 py-1 rounded text-teal-600">Last 10</span>
                     </div>
                     <div class="scrollable-list" id="predictionsList" role="log" aria-live="polite" aria-label="Recent prediction list">
                         <div class="flex items-center justify-center py-8">
@@ -203,15 +203,49 @@
         <!-- ============= INPUT & ANALYSIS SECTION ============= -->
         <section aria-label="Network Flow Analysis" class="input-section">
             <div class="mb-6 sm:mb-8">
-                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-700 mb-2">
                     🧪 Test Detection System
                 </h2>
-                <p class="text-gray-400 text-sm">Analyze network flows to detect potential threats</p>
+                <p class="text-slate-500 text-sm">Analyze network flows to detect potential threats</p>
             </div>
-
             <!-- Information Box -->
             <div class="info-box" role="note">
-                <strong>💡 How to use:</strong> Click a sample button for pre-configured network flows, or paste your own 41-feature CSV row to analyze threats in real-time.
+                <strong>How to use:</strong> Use Raw Flow mode for practical inputs (protocol/service/flag/bytes) or use CSV mode for full 41-value vectors.
+            </div>
+
+            <!-- Raw Flow Input -->
+            <div class="form-group">
+                <label class="form-label">
+                    <span class="flex items-center gap-2">
+                        <span>Raw</span>
+                        Raw Flow Input (Recommended)
+                    </span>
+                </label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <input id="rawProtocol" class="form-input" placeholder="protocol_type (e.g. tcp)" />
+                    <input id="rawService" class="form-input" placeholder="service (e.g. http)" />
+                    <input id="rawFlag" class="form-input" placeholder="flag (e.g. SF)" />
+                    <input id="rawSrcBytes" class="form-input" placeholder="src_bytes (e.g. 500)" />
+                    <input id="rawDstBytes" class="form-input" placeholder="dst_bytes (e.g. 200)" />
+                    <input id="rawDuration" class="form-input" placeholder="duration (optional, sec)" />
+                    <input id="rawSrcIp" class="form-input" placeholder="src_ip (optional)" />
+                    <input id="rawDstIp" class="form-input" placeholder="dst_ip (optional)" />
+                    <input id="rawSrcPort" class="form-input" placeholder="src_port (optional)" />
+                    <input id="rawDstPort" class="form-input" placeholder="dst_port (optional)" />
+                    <input id="rawTimestamp" class="form-input sm:col-span-2 lg:col-span-1" placeholder="timestamp (optional ISO)" />
+                </div>
+                <div class="button-group mt-3">
+                    <button
+                        class="btn-primary w-full sm:w-auto transition-all duration-300 hover:shadow-xl hover:shadow-blue-200/50 active:scale-95"
+                        onclick="submitRawFlow()"
+                        id="analyzeRawBtn"
+                        aria-label="Analyze raw flow fields for threats">
+                        <span class="flex items-center justify-center gap-2">
+                            <span>Analyze</span>
+                            Analyze Raw Flow
+                        </span>
+                    </button>
+                </div>
             </div>
 
             <!-- Sample Data Section -->
@@ -263,7 +297,7 @@
             <!-- Action Buttons -->
             <div class="button-group">
                 <button 
-                    class="btn-primary w-full sm:w-auto transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/50 active:scale-95" 
+                    class="btn-primary w-full sm:w-auto transition-all duration-300 hover:shadow-xl hover:shadow-blue-200/50 active:scale-95" 
                     onclick="submitCSV()"
                     id="analyzeBtn"
                     aria-label="Analyze the network flow for threats">
@@ -297,7 +331,7 @@
         </section>
 
         <!-- ============= FOOTER ============= -->
-        <footer class="mt-8 sm:mt-10 lg:mt-12 pt-6 border-t border-indigo-500/10 text-center text-gray-400 text-xs">
+        <footer class="mt-8 sm:mt-10 lg:mt-12 pt-6 border-t border-blue-200 text-center text-gray-500 text-xs">
             <p>Cyber Threat Detection System • NSL-KDD Dataset • ML Model: RandomForest (99% Accuracy)</p>
         </footer>
     </main>
@@ -312,10 +346,10 @@
             const inputs = document.querySelectorAll('.form-input');
             inputs.forEach(input => {
                 input.addEventListener('focus', function() {
-                    this.parentElement?.classList.add('ring-2', 'ring-indigo-500/50');
+                    this.parentElement?.classList.add('ring-2', 'ring-blue-300');
                 });
                 input.addEventListener('blur', function() {
-                    this.parentElement?.classList.remove('ring-2', 'ring-indigo-500/50');
+                    this.parentElement?.classList.remove('ring-2', 'ring-blue-300');
                 });
             });
 
@@ -325,3 +359,5 @@
     </script>
 </body>
 </html>
+
+

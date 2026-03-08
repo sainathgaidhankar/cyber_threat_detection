@@ -4,15 +4,23 @@ import sys
 import csv
 import threading
 from datetime import datetime
+from pathlib import Path
 
-# Add utils to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'utils'))
-from threat_predictor import ThreatPredictor
+try:
+    from utils.threat_predictor import ThreatPredictor
+    from utils.flow_feature_adapter import FlowFeatureAdapter
+except ImportError:
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "utils"))
+    from threat_predictor import ThreatPredictor
+    from flow_feature_adapter import FlowFeatureAdapter
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
-# Initialize threat predictor
-predictor = ThreatPredictor(model_dir="./model")
+# Initialize threat predictor with absolute path
+script_dir = Path(__file__).resolve().parent
+model_dir = script_dir / "model"
+predictor = ThreatPredictor(model_dir=str(model_dir))
+flow_adapter = FlowFeatureAdapter()
 
 # Store prediction history for metrics
 prediction_history = []
@@ -73,6 +81,10 @@ def predict():
         
         features = data["features"]
         
+        # Validate that features is a dict
+        if not isinstance(features, dict):
+            return jsonify({"error": "'features' must be a dictionary"}), 400
+        
         # Convert string keys to integers if needed
         new_features = {}
         for k, v in features.items():
@@ -111,7 +123,55 @@ def predict():
 @app.route("/api/model-info", methods=["GET"])
 def model_info():
     """Get information about the loaded model"""
-    return jsonify(predictor.get_model_info())
+    result = predictor.get_model_info()
+    
+    if _prediction_failed(result):
+        return jsonify(result), _prediction_error_status(result)
+    
+    return jsonify(result)
+
+
+@app.route("/api/feature-schema", methods=["GET"])
+def feature_schema():
+    """Describe flow payload fields and generated 41-feature model schema."""
+    return jsonify(flow_adapter.get_schema())
+
+
+@app.route("/api/predict-flow", methods=["POST"])
+def predict_flow():
+    """
+    Predict threat class from raw flow telemetry.
+
+    Clients can send high-level flow fields instead of the full 41-feature array.
+    """
+    try:
+        flow = request.json or {}
+        features = flow_adapter.to_features(flow)
+
+        result = predictor.predict(features)
+        if _prediction_failed(result):
+            if not isinstance(result, dict):
+                result = {"error": "Prediction failed", "success": False}
+            return jsonify(result), _prediction_error_status(result)
+
+        history_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "prediction": result.get("prediction"),
+            "confidence": result.get("confidence")
+        }
+        with prediction_history_lock:
+            prediction_history.append(history_entry)
+            if len(prediction_history) > MAX_HISTORY:
+                prediction_history.pop(0)
+
+        return jsonify({
+            "result": result,
+            "generated_features": {str(k): v for k, v in features.items()}
+        })
+    except ValueError as exc:
+        return jsonify({"error": str(exc), "success": False}), 400
+    except Exception as exc:
+        return jsonify({"error": str(exc), "success": False}), 500
 
 
 @app.route("/api/metrics", methods=["GET"])
@@ -159,12 +219,19 @@ def submit_row():
     """Accept a single CSV row or features JSON and return a prediction."""
     try:
         data = request.json or {}
+        
         # If features provided directly
         if 'features' in data:
             features = data['features']
+            # Validate that features is a dict
+            if not isinstance(features, dict):
+                return jsonify({'error': "'features' must be a dictionary"}), 400
         elif 'row' in data:
             # parse CSV row string
             row_str = data['row']
+            # Validate that row_str is a string
+            if not isinstance(row_str, str):
+                return jsonify({'error': "'row' must be a string"}), 400
             reader = csv.reader([row_str])
             row = next(reader, [])
             row = row[:41] + ['0'] * max(0, 41 - len(row))
